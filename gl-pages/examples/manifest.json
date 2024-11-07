@@ -1,0 +1,20 @@
+[
+    {
+        "id": "demos-basic",
+        "title": "Basic",
+        "items": [{
+            "title": "Container",
+            "entry": "container.js"
+        }]
+    },
+    {
+        "id": "mesh-and-shaders",
+        "title": "Mesh and Shaders",
+        "items": [
+            {
+                "title": "Basic",
+                "entry": "basic.js"
+            }
+        ]
+    }
+]
