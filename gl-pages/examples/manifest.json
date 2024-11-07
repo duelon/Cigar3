@@ -12,8 +12,8 @@
         "title": "Mesh and Shaders",
         "items": [
             {
-                "title": "Basic",
-                "entry": "basic.js"
+                "title": "Basic circle",
+                "entry": "circle.js"
             }
         ]
     }
