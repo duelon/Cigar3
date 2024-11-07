@@ -234,7 +234,7 @@ jQuery(document).ready(($) => {
             let pixiUrl = '';
 
             if (bpc.pixiVersionString === 'local') {
-                pixiUrl = './dist/pixi.mjs';
+                pixiUrl = './local/pixi.mjs';
             } else { // other versions come from S3
                 pixiUrl = `https://d157l7jdn8e5sf.cloudfront.net/${bpc.pixiVersionString}/pixi.mjs`;
             }
