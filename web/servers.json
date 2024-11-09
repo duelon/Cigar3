@@ -1,6 +1,6 @@
 {
-    "localhost:9999": {
-        "name": "Server 1"
+    "chainhackers.xyz:8888": {
+        "name": "Korolev"
     },
     "localhost:8080": {
         "name": "Server 2"

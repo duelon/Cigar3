@@ -1,3 +1,5 @@
+import { getMesh } from "./Skins.js"
+
 export default class Cell {
     static NAME_CACHE = new Map()
     static SKIN_CACHE = new Object()
@@ -143,8 +145,9 @@ export default class Cell {
     }
 
     _setSkin(value) {
-        this.sprite.texture = this._getSkinTexture(value)
-        this.sprite.tint = 0xffffff
+        console.log(value)
+        
+        this.sprite.addChild(getMesh())
     }
 
     update(time) {
