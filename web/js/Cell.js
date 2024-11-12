@@ -145,8 +145,6 @@ export default class Cell {
     }
 
     _setSkin(value) {
-        console.log(value)
-        
         this.sprite.addChild(getMesh())
     }
 
