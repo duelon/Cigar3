@@ -90,10 +90,16 @@ export default class Network {
         this.send(new Uint8Array([255, 1, 0, 0, 0]))
 
         this.mouseMoveInterval = setInterval(() => {
-            this.sendMouseMove(
-                (this.core.ui.mouse.x - innerWidth / 2) / this.core.app.camera.s + this.core.app.camera.x,
-                (this.core.ui.mouse.y - innerHeight / 2) / this.core.app.camera.s + this.core.app.camera.y
-            );
+            var x = this.core.ui.mouse.x
+            var y = this.core.ui.mouse.y
+            if (this.core.ui.mouse.fromJoystick) {
+                x = x * (innerWidth / 2) + this.core.app.camera.x
+                y = y * (-innerHeight / 2) + this.core.app.camera.y
+            } else {
+                x = (x - innerWidth / 2) / this.core.app.camera.s + this.core.app.camera.x
+                y = (y - innerHeight / 2) / this.core.app.camera.s + this.core.app.camera.y
+            }
+            this.sendMouseMove(x, y);
         }, 40);
     }
 

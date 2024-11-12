@@ -9,7 +9,8 @@ export default class UserInterface {
 
         this.mouse = {
             x: 0,
-            y: 0
+            y: 0,
+            fromJoystick: false
         }
 
         this.keysPressed = {};
@@ -37,7 +38,10 @@ export default class UserInterface {
 
         this.nameInput.value = this.core.store.name
         this.skinButton.style.backgroundImage = `url("${this.core.store.skin}")`
-
+        this.joystickOptions = {
+            zone: document.getElementById('joystick'),
+        };
+        this.joystick = nipplejs.create(this.joystickOptions);
         this.addEvents()
     }
 
@@ -49,6 +53,7 @@ export default class UserInterface {
         this.onKeyDown = this.onKeyDown.bind(this)
         this.onNameChange = this.onNameChange.bind(this)
         this.onMouseMove = this.onMouseMove.bind(this)
+        this.joystick.on('move', this.onJoystickMove.bind(this));
         this.onResize = this.onResize.bind(this)
         this.onScroll = this.onScroll.bind(this)
         this.onServers = this.onServers.bind(this)
@@ -197,6 +202,13 @@ export default class UserInterface {
     }) {
         this.mouse.x = clientX
         this.mouse.y = clientY
+        this.mouse.fromJoystick = false
+    }
+
+    onJoystickMove(event, data) {
+        this.mouse.x = data.vector.x
+        this.mouse.y = data.vector.y
+        this.mouse.fromJoystick = true
     }
 
     onScroll({
