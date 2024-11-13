@@ -25,6 +25,10 @@ export default class {
             }
         }
 
+        this.target_relative = new PIXI.Point()
+        this.joystick_enable = false
+        this.registerMouse()
+
         this.loop = this.loop.bind(this)
 
         this.skins = {}
@@ -34,7 +38,8 @@ export default class {
     async loadInfos() {
         this.skins = await this.fetchSkins()
         this.servers = await this.fetchServers()
-        this.joystick = await this.initJoystick()
+        await this.initJoystick()
+        this.registerJoystick()
     }
 
     drawBorder() {
@@ -339,6 +344,32 @@ export default class {
 //                 })
 //                 this.button1 = createButton('BOMB', 40)
 //                 this.button1.position.set(80, 60)
+    }
+
+    registerMouse() {
+        this.stage.on('mousemove', (event) => {
+            if (!this.joystick_enable) {
+                this.target_relative.x =
+                    (event.data.global.x - this.screen.width/2) / this.camera.s
+                this.target_relative.y =
+                    (event.data.global.y - this.screen.height/2) / this.camera.s
+            }
+        })
+    }
+
+    registerJoystick() {
+        const { joystick } = this
+        joystick.settings.onStart = () => {
+            this.joystick_enable = true
+        }
+        joystick.settings.onEnd = () => {
+            this.joystick_enable = false
+        }
+        joystick.settings.onChange = ({ angle, direction, power, }) => {
+            const p = power * 100 / this.camera.s
+            const radian = -angle * Math.PI / 180.0
+            this.target_relative.set(Math.cos(radian) * p, Math.sin(radian) * p)
+        }
     }
 }
 

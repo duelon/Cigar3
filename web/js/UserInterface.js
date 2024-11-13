@@ -8,11 +8,6 @@ export default class UserInterface {
 
         this.modalSystem = new ModalSystem()
 
-        this.mouse = {
-            x: 0,
-            y: 0
-        }
-
         this.keysPressed = {};
         this.ejectInterval = null;
 
@@ -49,7 +44,6 @@ export default class UserInterface {
         this.onSkin = this.onSkin.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.onNameChange = this.onNameChange.bind(this)
-        this.onMouseMove = this.onMouseMove.bind(this)
         this.onResize = this.onResize.bind(this)
         this.onScroll = this.onScroll.bind(this)
         this.onServers = this.onServers.bind(this)
@@ -71,12 +65,9 @@ export default class UserInterface {
             event.preventDefault()
         })
 
-        const pixiApp = this.core.app
-
-        pixiApp.view.addEventListener('wheel', this.onScroll, {
+        this.core.app.view.addEventListener('wheel', this.onScroll, {
             passive: true
         })
-        pixiApp.stage.on('mousemove', this.onMouseMove)
     }
 
     onPlay() {
@@ -193,11 +184,6 @@ export default class UserInterface {
             this.core.store.skin = ""
             document.getElementById("skin").style.backgroundImage = ""
         })
-    }
-
-    onMouseMove(event) {
-        this.mouse.x = event.data.global.x
-        this.mouse.y = event.data.global.y
     }
 
     onScroll({

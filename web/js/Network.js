@@ -92,8 +92,8 @@ export default class Network {
 
         this.mouseMoveInterval = setInterval(() => {
             this.sendMouseMove(
-                (this.core.ui.mouse.x - innerWidth / 2) / this.core.app.camera.s + this.core.app.camera.x,
-                (this.core.ui.mouse.y - innerHeight / 2) / this.core.app.camera.s + this.core.app.camera.y
+                this.core.app.target_relative.x + this.core.app.camera.x,
+                this.core.app.target_relative.y + this.core.app.camera.y
             );
         }, 40);
     }
