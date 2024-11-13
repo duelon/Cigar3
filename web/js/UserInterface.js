@@ -1,4 +1,5 @@
 import ModalSystem from "./ModalSystem.js"
+import {getWsConnectString} from "./common.js";
 
 export default class UserInterface {
 
@@ -151,7 +152,7 @@ export default class UserInterface {
         for (const ip in this.core.app.servers) {
             document.getElementById(`server-${ip}`).addEventListener("click", () => {
                 this.modalSystem.removeModal(modalID)
-                this.core.net.connect(`ws${'https:' === window.location.protocol ? "s" : ""}://${ip}`)
+                this.core.net.connect(getWsConnectString(ip))
             })
         }
     }

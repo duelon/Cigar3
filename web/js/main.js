@@ -3,6 +3,7 @@ import Application from "./Application.js"
 import Storage from "./Storage.js"
 import UserInterface from "./UserInterface.js"
 import Settings from "./Settings.js"
+import {getWsConnectString} from "./common.js";
 
 Array.prototype.remove = function (a) {
     const i = this.indexOf(a);
@@ -21,7 +22,7 @@ class Cigar3 {
         this.ui = new UserInterface(this)
         this.settings = new Settings(this)
         this.net = new Network(this)
-        this.net.connect(`ws${'https:' === window.location.protocol ? "s" : ""}://${Object.keys(this.app.servers)[0]}`)
+        this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0]))
     }
 }
 

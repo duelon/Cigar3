@@ -88,4 +88,8 @@ export default class {
         this.core.app.sectorContainer.visible = value
         this.rawSettings.sectors = value
     }
+
+    get isSecure() {
+        'https:' === window.location.protocol
+    }
 }
