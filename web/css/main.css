@@ -377,3 +377,11 @@ input[type=text]:focus {
 .round {
     border-radius: 50%;
 }
+
+.bottom-right-corner {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30%;
+    height: 30%;
+}
