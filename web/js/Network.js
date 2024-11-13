@@ -154,7 +154,7 @@ export default class Network {
         let sprite = new PIXI.Sprite(this.core.app.textures.cell)
         sprite.anchor.set(.5)
 
-        this.core.app.stage.addChild(sprite)
+        this.core.app.field.addChild(sprite)
 
         const cell = new Cell(this.core, id, x, y, r, sprite, name, color, skin, flags);
         cellsByID.set(id, cell);

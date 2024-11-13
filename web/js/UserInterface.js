@@ -63,10 +63,6 @@ export default class UserInterface {
         addEventListener("keydown", this.onKeyDown);
         addEventListener("keyup", this.onKeyUp);
         this.nameInput.addEventListener("change", this.onNameChange)
-        this.core.app.view.addEventListener("mousemove", this.onMouseMove)
-        this.core.app.view.addEventListener('wheel', this.onScroll, {
-            passive: true
-        })
         addEventListener("resize", this.onResize)
         addEventListener("beforeunload", (event) => {
             this.core.store.settings = this.core.settings.rawSettings
@@ -74,6 +70,13 @@ export default class UserInterface {
             event.returnValue = 'You sure you want to leave?'
             event.preventDefault()
         })
+
+        const pixiApp = this.core.app
+
+        pixiApp.view.addEventListener('wheel', this.onScroll, {
+            passive: true
+        })
+        pixiApp.view.addEventListener("mousemove", this.onMouseMove)
     }
 
     onPlay() {

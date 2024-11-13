@@ -43,7 +43,7 @@ export default class {
         .drawRect(-border.width / 2, -border.height / 2, border.width, border.height);
         this.borderGraphics.visible = this.core.settings.border
 
-        this.stage.addChild(this.borderGraphics)
+        this.field.addChild(this.borderGraphics)
     }
 
     drawBackground() {
@@ -56,7 +56,7 @@ export default class {
         .endFill()
         this.backgroundGraphics.visible = this.core.settings.background
 
-        this.stage.addChild(this.backgroundGraphics)
+        this.field.addChild(this.backgroundGraphics)
     }
 
     drawRainbowBorder() {
@@ -72,7 +72,7 @@ export default class {
         this.hueDegree = 0
         this.rainbowSprite.visible = this.core.settings.rainbowBorder
 
-        this.stage.addChild(this.rainbowSprite)
+        this.field.addChild(this.rainbowSprite)
         this.performHueShifting()
     }
 
@@ -101,7 +101,7 @@ export default class {
         this.gridSprite.position.set(-border.width / 2, -border.height / 2)
         this.gridSprite.visible = this.core.settings.grid
 
-        this.stage.addChild(this.gridSprite)
+        this.field.addChild(this.gridSprite)
     }
 
     drawSectors() {
@@ -136,7 +136,7 @@ export default class {
         this.sectorContainer.position.set(-1 * sectorSize * 5 / 2, -1 * sectorSize * 5 / 2)
         this.sectorContainer.visible = this.core.settings.sectors
 
-        this.stage.addChild(this.sectorContainer)
+        this.field.addChild(this.sectorContainer)
     }
 
     initMinimap() {
@@ -166,7 +166,13 @@ export default class {
             powerPreference: 'high-performance'
         })
         this.stage = new PIXI.Container()
-        this.stage.sortableChildren = true
+
+        this.field = new PIXI.Container()
+        this.field.sortableChildren = true
+
+        this.stage.addChild(this.field)
+
+        // this.stage.hitArea = renderer.screen
 
         const circle = new PIXI.Graphics()
         circle.beginFill(0xffffff)
@@ -239,7 +245,7 @@ export default class {
     }
 
     clear() {
-        this.stage.removeChildren()
+        this.field.removeChildren()
         this.cells = []
         this.cellsByID = new Map()
         this.ownedCells = []
@@ -274,9 +280,9 @@ export default class {
 
         this.camera.s += (this.camera.target.s - this.camera.s) / 20;
 
-        this.stage.pivot.set(this.camera.x, this.camera.y)
-        this.stage.scale.set(this.camera.s)
-        this.stage.position.set(innerWidth / 2, innerHeight / 2)
+        this.field.pivot.set(this.camera.x, this.camera.y)
+        this.field.scale.set(this.camera.s)
+        this.field.position.set(innerWidth / 2, innerHeight / 2)
 
         this.camera.score = score
     }
