@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import Cell from "./Cell.js"
 
 export default class Network {

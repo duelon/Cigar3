@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js'
+
 export default class Cell {
     static NAME_CACHE = new Map()
     static SKIN_CACHE = new Object()

@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import Cell from "./Cell.js"
 import {Joystick} from "./joystick.js";
 
@@ -295,18 +296,30 @@ export default class {
     }
 
     async initJoystick() {
+        //TODO: for pixi-v7 use bundle!
         // PIXI.Assets.addBundle('joystick', {
         //     'joy_outer':'sprites/joystick.png',
         //     'joy_inner':'sprites/joystick-handle.png'
         // })
-
         // const resources = await PIXI.Assets.loadBundle('joystick')
+
+        // this is pixi-v6 code
+        const loader = new PIXI.Loader()
+        loader.add('joy_outer', 'sprites/joystick.png')
+        loader.add('joy_inner', 'sprites/joystick-handle.png')
+
+        const p = new Promise((resolve, reject) => {
+            loader.load((loader, resources) => {
+                resolve(resources)
+            })
+        })
+        const resources = await p;
 
         this.joystick = new Joystick({
             outerScale: { x : 1, y : 1},
             innerScale: { x : 1, y : 1},
-            // outer: new PIXI.Sprite(resources['joy_outer']),
-            // inner: new PIXI.Sprite(resources['joy_inner']),
+            outer: new PIXI.Sprite(resources['joy_outer'].texture),
+            inner: new PIXI.Sprite(resources['joy_inner'].texture),
         })
         this.joystick.position.set(this.screen.width - 400, this.screen.height - 200);
         this.stage.addChild(this.joystick)

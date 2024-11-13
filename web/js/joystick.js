@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js'
+
 const Direction = {
     LEFT: 'left',
     TOP: 'top',
