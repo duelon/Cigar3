@@ -643,7 +643,7 @@ Hit raymarch(CastRay castRay){
 
 void shadeSurface(inout Hit hit){
     
-    vec3 color = BACKGROUND_COLOR;
+    vec3 color = vec3( 0., 0., 0.);
     
     if (hit.isBackground) {
         hit.color = color;
@@ -687,7 +687,7 @@ mat3 calcLookAtMatrix( in vec3 ro, in vec3 ta, in float roll )
 }
 
 void doCamera(out vec3 camPos, out vec3 camTar, out float camRoll, in float time, in vec2 mouse) {
-    float dist = 5.5;
+    float dist = 20.;
     camRoll = 0.;
     camTar = vec3(0,0,0);
     camPos = vec3(0,0,-dist);
@@ -734,12 +734,9 @@ void main( )
     vec2 p = (-resolutionPIXI.xy + 2.0*gl_FragCoord.xy)/resolutionPIXI.y;
     vec2 m = mousePIXI.xy / resolutionPIXI.xy;
 
-    vec3 camPos = vec3( 0., 0., 200.);
+    vec3 camPos = vec3( 0.,  0.,  5.5 );
     vec3 camTar = vec3( 0. , 0. , 0. );
     float camRoll = 0.;
-    
-    // camera movement
-    doCamera(camPos, camTar, camRoll, timerPIXI, m);
     
     // camera matrix
     mat3 camMat = calcLookAtMatrix( camPos, camTar, camRoll );  // 0.0 is the camera roll
@@ -751,16 +748,17 @@ void main( )
 
     vec3 color = render(hit);
     
-    #ifndef DEBUG
-        color = linearToScreen(color);
-    #endif
-
-    gl_FragColor = vec4(color,1.0);
+    if (color == vec3( 0., 0., 0.)) {
+        gl_FragColor = vec4(color, 0.);
+    } else {
+        gl_FragColor = vec4(color, 1.);
+    } 
+    
 }
 `;
 
     const uniforms = {
-        resolutionPIXI: [1000, 1000],
+        resolutionPIXI: [2000, 2000],
         mousePIXI: [0, 0],
         timerPIXI: 0,
     };
@@ -778,7 +776,6 @@ void main( )
     let time = 0;
     ticker.add((deltaTime) => {
         time += 1 / 60;
-        console.log(time)
         triangle.shader.uniforms.timerPIXI = time;
     });
     ticker.start();
