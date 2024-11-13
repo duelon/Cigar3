@@ -76,7 +76,7 @@ export default class UserInterface {
         pixiApp.view.addEventListener('wheel', this.onScroll, {
             passive: true
         })
-        pixiApp.view.addEventListener("mousemove", this.onMouseMove)
+        pixiApp.stage.on('mousemove', this.onMouseMove)
     }
 
     onPlay() {
@@ -195,12 +195,9 @@ export default class UserInterface {
         })
     }
 
-    onMouseMove({
-        clientX,
-        clientY
-    }) {
-        this.mouse.x = clientX
-        this.mouse.y = clientY
+    onMouseMove(event) {
+        this.mouse.x = event.data.global.x
+        this.mouse.y = event.data.global.y
     }
 
     onScroll({

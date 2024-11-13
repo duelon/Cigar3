@@ -172,7 +172,8 @@ export default class {
 
         this.stage.addChild(this.field)
 
-        // this.stage.hitArea = renderer.screen
+        this.stage.interactive = true
+        this.stage.hitArea = this.renderer.screen
 
         const circle = new PIXI.Graphics()
         circle.beginFill(0xffffff)
