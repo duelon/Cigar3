@@ -1,49 +1,56 @@
 
 export function getMesh() {
 
-    
+    const buffer = new PIXI.Buffer(new Float32Array([
+        1.05, 0.4,
+        0.4, 1.05,
+        -0.4, 1.05,
+        -1.05, 0.4,
+        -1.05, -0.4,
+        -0.4, -1.05,
+        0.4, -1.05,
+        1.05, -0.4,
+    ]))
+
     const geometry = new PIXI.Geometry()
-        .addAttribute('aVertexPosition', [-100, -100, // x, y
-            100, -100, // x, y
-            100, 100,
-            -100, 100], 2) // the size of the attribute
-        .addAttribute('aUvs', // the attribute name
-            [0, 0, // u, v
-                1, 0, // u, v
-                1, 1,
-                0, 1], // u, v
-            2) 
-    
+        .addAttribute('aVertexPosition', buffer, 2)
     // A C TX
     // B D TY
     // 0 0 1
-    
+
     // ось X  вектор (A,B) на экране
     // ось Y в (C,D)
     // нулевая точка (origin)  уходит в (tx,ty)
-    
-    //в шейдере хранение по столбцам
-    
-    const vertexSrc = `
-    precision mediump float;
 
+    //в шейдере хранение по столбцам
+
+    const vertexSrc = `    
     attribute vec2 aVertexPosition;
-    attribute vec2 aUvs;
 
     uniform mat3 translationMatrix;
     uniform mat3 projectionMatrix;
 
+    // varying vec2 pixel_coord;
+    // varying vec3 circle;
     varying vec2 vUvs;
 
     void main() {
+        vec2 pixel_vert = (translationMatrix * vec3(aVertexPosition, 1.0)).xy;
+        vec2 pixel_center = translationMatrix[2].xy;
+        float radius = length(translationMatrix[0].xy);
 
-        vUvs = aUvs;
+        // pixel_coord = pixel_vert;
+        // circle = vec3(pixel_center, radius);
+        vUvs = aVertexPosition * 0.5 + 0.5;
+
         gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
-
     }
 `;
-    
+
     const fragmentSrc = `
+// varying vec2 pixel_coord;
+// varying vec3 circle;
+varying vec2 vUvs;
 
 #define MODEL_ROTATION vec2(.3, .25)
 #define CAMERA_ROTATION vec2(.5, .5)
@@ -731,7 +738,9 @@ void main( )
     
     initIcosahedron();
     
-    vec2 p = (-resolutionPIXI.xy + 2.0*gl_FragCoord.xy)/resolutionPIXI.y;
+    // vec2 p = (-resolutionPIXI.xy + 2.0*gl_FragCoord.xy)/resolutionPIXI.y;
+    
+    vec2 p = vUvs * 2.0 - 1.0;
     vec2 m = mousePIXI.xy / resolutionPIXI.xy;
 
     vec3 camPos = vec3( 0.,  0.,  5.5 );
@@ -748,8 +757,8 @@ void main( )
 
     vec3 color = render(hit);
     
-    if (color == vec3( 0., 0., 0.)) {
-        gl_FragColor = vec4(color, 0.);
+    if (hit.isBackground) {
+        gl_FragColor = vec4(0.);
     } else {
         gl_FragColor = vec4(color, 1.);
     } 
@@ -762,15 +771,15 @@ void main( )
         mousePIXI: [0, 0],
         timerPIXI: 0,
     };
-    
+
     const shader = PIXI.Shader.from(vertexSrc, fragmentSrc, uniforms);
-    
+
     const triangle = new PIXI.Mesh(geometry, shader);
-    
+
     triangle.drawMode = PIXI.DRAW_MODES.TRIANGLE_FAN
-    
-    triangle.scale.set(10);
-    
+
+    triangle.scale.set(400);
+
     const ticker = typeof PIXI.Ticker === 'undefined' ? PIXI.ticker.shared : PIXI.Ticker.shared
     ticker.stop();
     let time = 0;
