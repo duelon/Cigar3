@@ -333,7 +333,9 @@ export default class Network {
     }
 
     onNodesUpdate(reader) {
-        this.core.app.minimapEntity.position.set(((this.core.app.camera.x + this.border.width / 2) / this.border.width) * 250, ((this.core.app.camera.y + this.border.height / 2) / this.border.height) * 250)
+        this.core.app.minimapEntity.position.set(
+            ((this.core.app.camera.x + this.border.width / 2) / this.border.width) * 200,
+            ((this.core.app.camera.y + this.border.height / 2) / this.border.height) * 200)
         let cellsByID = this.core.app.cellsByID
 
         // consume records

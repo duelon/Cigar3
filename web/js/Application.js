@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import Cell from "./Cell.js"
 import {Joystick} from "./joystick.js";
+import {createPixiButton} from "./pixi-utils.js";
 
 export default class {
     constructor(core) {
@@ -40,6 +41,9 @@ export default class {
         this.servers = await this.fetchServers()
         await this.initJoystick()
         this.registerJoystick()
+
+        window.setInterval(this.checkResize, 100)
+        this.resizeLayout()
     }
 
     drawBorder() {
@@ -148,20 +152,20 @@ export default class {
     }
 
     initMinimap() {
-        const view = this.minimapView = document.getElementById("minimap-view")
-        this.minimapRenderer = new PIXI.Renderer({ 
-            view,
-            width: 250,
-            height: 250,
-            backgroundAlpha: 0,
-            antialiasing: false
-        })
         const sprite = this.minimapEntity = new PIXI.Sprite(PIXI.Texture.WHITE)
         sprite.width = 10
         sprite.height = 10
         sprite.anchor.set(.5)
-        const stage = this.minimapStage = new PIXI.Container()
-        stage.addChild(sprite)
+
+        const miniGraphics = new PIXI.Graphics()
+        miniGraphics.beginFill(0x0, 0.4)
+        miniGraphics.drawRoundedRect(0, 0, 200, 200, 20)
+        miniGraphics.endFill()
+
+        this.minimapStage = new PIXI.Container()
+        this.minimapStage.pivot.set(100, 100)
+        this.minimapStage.addChild(miniGraphics, sprite)
+        this.stage.addChild(this.minimapStage)
     }
 
     initRenderer() {
@@ -171,7 +175,7 @@ export default class {
             width: innerWidth,
             height: innerHeight,
             antialiasing: false,
-            powerPreference: 'high-performance'
+            powerPreference: 'high-performance',
         })
         this.stage = new PIXI.Container()
 
@@ -248,7 +252,6 @@ export default class {
         this.updateCamera()
 
         this.renderer.render(this.stage)
-        this.minimapRenderer.render(this.minimapStage)
 
         requestAnimationFrame(this.loop)
     }
@@ -326,7 +329,7 @@ export default class {
             outer: new PIXI.Sprite(resources['joy_outer'].texture),
             inner: new PIXI.Sprite(resources['joy_inner'].texture),
         })
-        this.joystick.position.set(this.screen.width - 400, this.screen.height - 200);
+        this.joystick.position.set(this.screen.width - 200, this.screen.height - 200);
         this.stage.addChild(this.joystick)
 
         //             PIXI.Assets.addBundle('joystick', {
@@ -370,6 +373,38 @@ export default class {
             const radian = -angle * Math.PI / 180.0
             this.target_relative.set(Math.cos(radian) * p, Math.sin(radian) * p)
         }
+
+        this.joystick_split = createPixiButton("SPLIT", 60)
+        this.joystick_split.on('clicked', () => {
+            this.core.net.sendSplit();
+        })
+        this.joystick_eject = createPixiButton("EJECT", 60)
+        this.joystick_eject.on('clicked', () => {
+            this.core.net.sendEject();
+        })
+        this.stage.addChild(this.joystick_split, this.joystick_eject)
+    }
+
+    checkResize = () => {
+        const elem_width = window.innerWidth
+        const elem_height = window.innerHeight
+        const { renderer } = this
+
+        if (elem_width > 0 && elem_height > 0) {
+            if (Math.abs(elem_width - renderer.screen.width) > 1 || Math.abs(elem_height - renderer.screen.height) > 1) {
+                renderer.resize(elem_width, elem_height)
+                // use event instead
+                this.resizeLayout()
+            }
+        }
+    }
+
+    resizeLayout() {
+        const {screen} = this.renderer
+        this.joystick?.position.set(screen.width - 125, screen.height - 125)
+        this.joystick_split?.position.set(70, screen.height - 150)
+        this.joystick_eject?.position.set(200, screen.height - 100)
+        this.minimapStage?.position.set(screen.width/2, screen.height - 105)
     }
 }
 

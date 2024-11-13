@@ -252,7 +252,6 @@ export default class UserInterface {
     }
 
     onResize() {
-        this.core.app.renderer.resize(innerWidth, innerHeight)
     }
 
     setPanelState(show) {
