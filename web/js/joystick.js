@@ -1,5 +1,3 @@
-import * as PIXI from "pixi.js";
-
 const Direction = {
     LEFT: 'left',
     TOP: 'top',
@@ -22,7 +20,7 @@ const DIR_TO_POINT = {
     bottom_right: new PIXI.Point(1, 1),
 }
 
-class Joystick extends PIXI.Container {
+export class Joystick extends PIXI.Container {
     settings = undefined
 
     outerRadius = 0;

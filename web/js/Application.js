@@ -1,4 +1,5 @@
 import Cell from "./Cell.js"
+import {Joystick} from "./joystick.js";
 
 export default class {
     constructor(core) {
@@ -32,6 +33,7 @@ export default class {
     async loadInfos() {
         this.skins = await this.fetchSkins()
         this.servers = await this.fetchServers()
+        this.joystick = await this.initJoystick()
     }
 
     drawBorder() {
@@ -286,6 +288,44 @@ export default class {
         this.field.position.set(innerWidth / 2, innerHeight / 2)
 
         this.camera.score = score
+    }
+
+    get screen() {
+        return this.renderer.screen
+    }
+
+    async initJoystick() {
+        // PIXI.Assets.addBundle('joystick', {
+        //     'joy_outer':'sprites/joystick.png',
+        //     'joy_inner':'sprites/joystick-handle.png'
+        // })
+
+        // const resources = await PIXI.Assets.loadBundle('joystick')
+
+        this.joystick = new Joystick({
+            outerScale: { x : 1, y : 1},
+            innerScale: { x : 1, y : 1},
+            // outer: new PIXI.Sprite(resources['joy_outer']),
+            // inner: new PIXI.Sprite(resources['joy_inner']),
+        })
+        this.joystick.position.set(this.screen.width - 400, this.screen.height - 200);
+        this.stage.addChild(this.joystick)
+
+        //             PIXI.Assets.addBundle('joystick', {
+//                 'joy_outer':'i/pixi/joystick.png',
+//                 'joy_inner':'i/pixi/joystick-handle.png'
+//             })
+//             PIXI.Assets.loadBundle('joystick').then((res) => {
+//                 this.joystick = new Joystick({
+//                     outerScale: {x: 0.65, y: 0.65},
+//                     innerScale: {x: 0.65, y: 0.65},
+//                     outer: new PIXI.Sprite(res['joy_outer']),
+//                     inner: new PIXI.Sprite(res['joy_inner']),
+//                     onChange: this.onJoystickChange,
+//                     onEnd: () => { this.onJoystickChange({ power: 0, direction: 0}) }
+//                 })
+//                 this.button1 = createButton('BOMB', 40)
+//                 this.button1.position.set(80, 60)
     }
 }
 
