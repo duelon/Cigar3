@@ -1,53 +1,4 @@
-
-export function getMesh() {
-
-    const buffer = new PIXI.Buffer(new Float32Array([
-        1.05, 0.4,
-        0.4, 1.05,
-        -0.4, 1.05,
-        -1.05, 0.4,
-        -1.05, -0.4,
-        -0.4, -1.05,
-        0.4, -1.05,
-        1.05, -0.4,
-    ]))
-
-    const geometry = new PIXI.Geometry()
-        .addAttribute('aVertexPosition', buffer, 2)
-    // A C TX
-    // B D TY
-    // 0 0 1
-
-    // ось X  вектор (A,B) на экране
-    // ось Y в (C,D)
-    // нулевая точка (origin)  уходит в (tx,ty)
-
-    //в шейдере хранение по столбцам
-
-    const vertexSrc = `    
-    attribute vec2 aVertexPosition;
-
-    uniform mat3 translationMatrix;
-    uniform mat3 projectionMatrix;
-
-    // varying vec2 pixel_coord;
-    // varying vec3 circle;
-    varying vec2 vUvs;
-
-    void main() {
-        vec2 pixel_vert = (translationMatrix * vec3(aVertexPosition, 1.0)).xy;
-        vec2 pixel_center = translationMatrix[2].xy;
-        float radius = length(translationMatrix[0].xy);
-
-        // pixel_coord = pixel_vert;
-        // circle = vec3(pixel_center, radius);
-        vUvs = aVertexPosition * 0.5 + 0.5;
-
-        gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
-    }
-`;
-
-    const fragmentSrc = `
+const SKIN1 = `    
 // varying vec2 pixel_coord;
 // varying vec3 circle;
 varying vec2 vUvs;
@@ -765,6 +716,141 @@ void main( )
     
 }
 `;
+const SKIN2 = `
+varying vec2 vUvs;
+
+const float pi = 3.14159265359;
+const float scale = 1.2;
+const float blur = 1.0*scale;
+const float thickness = 3.0*scale+blur;
+
+// initialize arbitrary values.
+const float timesMin = -100.0;
+const float timesMax = 100.0;
+const int modularMin = 10;
+const int modularMax = 200;
+const bool truncate = true; // truncate times value or not
+
+uniform vec2 resolutionPIXI;
+uniform float timerPIXI;
+
+
+vec2 uvmap(vec2 uv)
+{
+    return vUvs * 2.0 - 1.0;
+}
+
+float map(float x, float oldMin, float oldMax, float newMin, float newMax) {
+    return newMin + (x - oldMin)/(oldMax - oldMin)*(newMax - newMin);
+}
+
+vec3 pickColor(float n) {
+    return 0.6+0.6*cos(6.3*n+vec3(0,23,21));
+}
+
+float smoothout(float dist){
+    return smoothstep(thickness/resolutionPIXI.y,-blur/resolutionPIXI.y,dist);
+}
+
+float circle(vec2 uv, vec2 C, float r, bool fill)
+{
+    vec2 p = uv-C;
+    float fx = length(p)-r;
+    float dist = fill? fx:abs(fx);
+    return smoothout(dist);
+}
+
+float line(vec2 p, vec2 a, vec2 b)
+{
+    vec2 pa = p - a, ba = b - a; 
+    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+    float dist = length(pa - ba * h);
+    return smoothout(dist);
+}
+
+void main()
+{
+    vec2 uv = uvmap(gl_FragCoord.xy)*scale;
+    vec3 col = vec3(0);
+    vec2 m = vec2(3.0, 200.0);
+        
+    float times = truncate?floor(m.x):m.x;
+    int modular = int(m.y); 			// number of divisions
+    float len = 2.0*pi/float(modular); 	// length of each division
+    
+    col+=circle(uv,vec2(0),1.0,false); // draw circle
+    
+
+    for(int i = 0; i < 200; i++) {
+        float n = float(i);    
+        // calculate coordinates on circle
+        vec2 c = -vec2(cos(n*len),sin(n*len));
+        vec2 p = -vec2(cos(n*len*times),sin(n*len*times));
+        
+        // draw dots and lines
+        col+= circle(uv,c,0.005,true);
+        col+= line(uv,c,p)*pickColor(n/float(modular)/3.+timerPIXI/10.0);
+    }
+    
+    // output to screen
+    if (col == vec3(0)) {
+        gl_FragColor = vec4(0);
+    } else {
+        gl_FragColor = vec4(col,1.0);
+    }
+   
+}`
+
+
+export function getMesh() {
+
+    const buffer = new PIXI.Buffer(new Float32Array([
+        1.05, 0.4,
+        0.4, 1.05,
+        -0.4, 1.05,
+        -1.05, 0.4,
+        -1.05, -0.4,
+        -0.4, -1.05,
+        0.4, -1.05,
+        1.05, -0.4,
+    ]))
+
+    const geometry = new PIXI.Geometry()
+        .addAttribute('aVertexPosition', buffer, 2)
+    // A C TX
+    // B D TY
+    // 0 0 1
+
+    // ось X  вектор (A,B) на экране
+    // ось Y в (C,D)
+    // нулевая точка (origin)  уходит в (tx,ty)
+
+    //в шейдере хранение по столбцам
+
+    const vertexSrc = `    
+        attribute vec2 aVertexPosition;
+
+        uniform mat3 translationMatrix;
+        uniform mat3 projectionMatrix;
+
+        // varying vec2 pixel_coord;
+        // varying vec3 circle;
+        varying vec2 vUvs;
+
+        void main() {
+            vec2 pixel_vert = (translationMatrix * vec3(aVertexPosition, 1.0)).xy;
+            vec2 pixel_center = translationMatrix[2].xy;
+            float radius = length(translationMatrix[0].xy);
+
+            // pixel_coord = pixel_vert;
+            // circle = vec3(pixel_center, radius);
+            vUvs = aVertexPosition * 0.5 + 0.5;
+
+            gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+        }
+    `;
+    const fragmentSrc = SKIN2;
+
 
     const uniforms = {
         resolutionPIXI: [2000, 2000],
