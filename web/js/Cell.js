@@ -145,7 +145,7 @@ export default class Cell {
     }
 
     _setSkin(value) {
-        this.sprite.addChild(getMesh())
+        this.sprite.addChild(getMesh(value))
     }
 
     update(time) {

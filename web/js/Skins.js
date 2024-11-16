@@ -802,7 +802,7 @@ void main()
 }`
 
 
-export function getMesh() {
+export function getMesh(skin) {
 
     const buffer = new PIXI.Buffer(new Float32Array([
         1.05, 0.4,
@@ -849,7 +849,13 @@ export function getMesh() {
             gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
         }
     `;
-    const fragmentSrc = SKIN2;
+    let fragmentSrc
+    console.log(skin)
+    if (skin === "./skins/doge.png") {
+        fragmentSrc = SKIN1
+    } else if (skin === "./skins/pokerface.png") {
+        fragmentSrc = SKIN2
+    }
 
 
     const uniforms = {
