@@ -153,9 +153,9 @@ export default class Cell {
 
         if (this.hasChanged) {
             this.color = this.color
+            this.skin = this.skin
             this.mass = this.mass
             this.name = this.name
-            this.skin = this.skin
             this.hasChanged = false
         }
 
