@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi.js'
+
 const SKIN1 = `    
 // varying vec2 pixel_coord;
 // varying vec3 circle;

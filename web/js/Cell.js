@@ -1,4 +1,5 @@
 import { getMesh } from "./Skins.js"
+import * as PIXI from 'pixi.js'
 
 export default class Cell {
     static NAME_CACHE = new Map()
