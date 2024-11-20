@@ -151,10 +151,15 @@ export default class Network {
     addCell(id, x, y, r, name, color, skin, flags) {
         let cellsByID = this.core.app.cellsByID
         let cells = this.core.app.cells
-
-        let sprite = new PIXI.Sprite(this.core.app.textures.cell)
-        sprite.anchor.set(.5)
-
+        let sprite
+        if (skin) {
+            sprite = new PIXI.Container()
+        }
+        else {
+            sprite = new PIXI.Sprite(this.core.app.textures.cell)
+            sprite.anchor.set(.5)
+        }
+        
         this.core.app.field.addChild(sprite)
 
         const cell = new Cell(this.core, id, x, y, r, sprite, name, color, skin, flags);

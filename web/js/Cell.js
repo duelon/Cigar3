@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js'
+import { getMesh } from "./Skins.js"
 
 export default class Cell {
     static NAME_CACHE = new Map()
@@ -145,8 +145,7 @@ export default class Cell {
     }
 
     _setSkin(value) {
-        this.sprite.texture = this._getSkinTexture(value)
-        this.sprite.tint = 0xffffff
+        this.sprite.addChild(getMesh(value))
     }
 
     update(time) {
@@ -154,9 +153,9 @@ export default class Cell {
 
         if (this.hasChanged) {
             this.color = this.color
+            this.skin = this.skin
             this.mass = this.mass
             this.name = this.name
-            this.skin = this.skin
             this.hasChanged = false
         }
 
