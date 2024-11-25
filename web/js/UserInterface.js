@@ -1,4 +1,5 @@
 import ModalSystem from "./ModalSystem.js"
+import {getWsConnectString} from "./common.js";
 
 export default class UserInterface {
 
@@ -6,11 +7,6 @@ export default class UserInterface {
         this.core = core
 
         this.modalSystem = new ModalSystem()
-
-        this.mouse = {
-            x: 0,
-            y: 0
-        }
 
         this.keysPressed = {};
         this.ejectInterval = null;
@@ -48,7 +44,6 @@ export default class UserInterface {
         this.onSkin = this.onSkin.bind(this)
         this.onKeyDown = this.onKeyDown.bind(this)
         this.onNameChange = this.onNameChange.bind(this)
-        this.onMouseMove = this.onMouseMove.bind(this)
         this.onResize = this.onResize.bind(this)
         this.onScroll = this.onScroll.bind(this)
         this.onServers = this.onServers.bind(this)
@@ -62,16 +57,16 @@ export default class UserInterface {
         addEventListener("keydown", this.onKeyDown);
         addEventListener("keyup", this.onKeyUp);
         this.nameInput.addEventListener("change", this.onNameChange)
-        this.core.app.view.addEventListener("mousemove", this.onMouseMove)
-        this.core.app.view.addEventListener('wheel', this.onScroll, {
-            passive: true
-        })
         addEventListener("resize", this.onResize)
         addEventListener("beforeunload", (event) => {
             this.core.store.settings = this.core.settings.rawSettings
             event.cancelBubble = true
             event.returnValue = 'You sure you want to leave?'
             event.preventDefault()
+        })
+
+        this.core.app.view.addEventListener('wheel', this.onScroll, {
+            passive: true
         })
     }
 
@@ -151,7 +146,7 @@ export default class UserInterface {
         for (const ip in this.core.app.servers) {
             document.getElementById(`server-${ip}`).addEventListener("click", () => {
                 this.modalSystem.removeModal(modalID)
-                this.core.net.connect(`ws${'https:' === window.location.protocol ? "s" : ""}://${ip}`)
+                this.core.net.connect(getWsConnectString(ip))
             })
         }
     }
@@ -189,14 +184,6 @@ export default class UserInterface {
             this.core.store.skin = ""
             document.getElementById("skin").style.backgroundImage = ""
         })
-    }
-
-    onMouseMove({
-        clientX,
-        clientY
-    }) {
-        this.mouse.x = clientX
-        this.mouse.y = clientY
     }
 
     onScroll({
@@ -265,7 +252,6 @@ export default class UserInterface {
     }
 
     onResize() {
-        this.core.app.renderer.resize(innerWidth, innerHeight)
     }
 
     setPanelState(show) {

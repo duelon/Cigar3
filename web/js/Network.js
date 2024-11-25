@@ -1,3 +1,4 @@
+import * as PIXI from 'pixi.js'
 import Cell from "./Cell.js"
 
 export default class Network {
@@ -91,8 +92,8 @@ export default class Network {
 
         this.mouseMoveInterval = setInterval(() => {
             this.sendMouseMove(
-                (this.core.ui.mouse.x - innerWidth / 2) / this.core.app.camera.s + this.core.app.camera.x,
-                (this.core.ui.mouse.y - innerHeight / 2) / this.core.app.camera.s + this.core.app.camera.y
+                this.core.app.target_relative.x + this.core.app.camera.x,
+                this.core.app.target_relative.y + this.core.app.camera.y
             );
         }, 40);
     }
@@ -150,11 +151,16 @@ export default class Network {
     addCell(id, x, y, r, name, color, skin, flags) {
         let cellsByID = this.core.app.cellsByID
         let cells = this.core.app.cells
-
-        let sprite = new PIXI.Sprite(this.core.app.textures.cell)
-        sprite.anchor.set(.5)
-
-        this.core.app.stage.addChild(sprite)
+        let sprite
+        if (skin) {
+            sprite = new PIXI.Container()
+        }
+        else {
+            sprite = new PIXI.Sprite(this.core.app.textures.cell)
+            sprite.anchor.set(.5)
+        }
+        
+        this.core.app.field.addChild(sprite)
 
         const cell = new Cell(this.core, id, x, y, r, sprite, name, color, skin, flags);
         cellsByID.set(id, cell);
@@ -332,7 +338,9 @@ export default class Network {
     }
 
     onNodesUpdate(reader) {
-        this.core.app.minimapEntity.position.set(((this.core.app.camera.x + this.border.width / 2) / this.border.width) * 250, ((this.core.app.camera.y + this.border.height / 2) / this.border.height) * 250)
+        this.core.app.minimapEntity.position.set(
+            ((this.core.app.camera.x + this.border.width / 2) / this.border.width) * 200,
+            ((this.core.app.camera.y + this.border.height / 2) / this.border.height) * 200)
         let cellsByID = this.core.app.cellsByID
 
         // consume records
