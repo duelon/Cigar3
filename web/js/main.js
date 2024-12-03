@@ -21,15 +21,16 @@ class Cigar3 {
         this.store = new Storage();
         this.ui = new UserInterface(this);
 
-        const params = new URLSearchParams(window.location.search);
-        if (params.has('auth_token')) {
-            this.store.authKey = params.get('auth_token');
-            this.ui.onPlay();
-        }
-
         this.settings = new Settings(this);
         this.net = new Network(this);
         this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0], this.store.authKey));
+
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.has('authKey')) {
+            this.store.authKey = params.get('authKey');
+            this.ui.onPlay();
+        }
     }
 
 }
