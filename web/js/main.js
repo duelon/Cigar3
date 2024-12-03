@@ -22,7 +22,7 @@ class Cigar3 {
         this.ui = new UserInterface(this);
 
         const params = new URLSearchParams(window.location.search);
-        if (params.has('id')) {
+        if (params.has('auth_token')) {
             this.store.authKey = params.get('auth_token');
             this.ui.onPlay();
         }
