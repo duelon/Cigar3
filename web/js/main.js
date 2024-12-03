@@ -16,14 +16,22 @@ class Cigar3 {
     }
 
     async init() {
-        this.app = new Application(this)
-        await this.app.loadInfos()
-        this.store = new Storage()
-        this.ui = new UserInterface(this)
-        this.settings = new Settings(this)
-        this.net = new Network(this)
-        this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0]))
+        this.app = new Application(this);
+        await this.app.loadInfos();
+        this.store = new Storage();
+        this.ui = new UserInterface(this);
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('id')) {
+            this.store.authKey = params.get('auth_token');
+            this.ui.onPlay();
+        }
+
+        this.settings = new Settings(this);
+        this.net = new Network(this);
+        this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0], this.store.authKey));
     }
+
 }
 
 window.CORE = new Cigar3()
