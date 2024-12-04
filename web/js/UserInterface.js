@@ -73,7 +73,6 @@ export default class UserInterface {
     onPlay() {
         this.core.net.spawn()
         this.setPanelState(false)
-
     }
 
     onSpectate() {

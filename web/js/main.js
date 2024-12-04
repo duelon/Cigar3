@@ -23,14 +23,14 @@ class Cigar3 {
 
         this.settings = new Settings(this);
         this.net = new Network(this);
-        this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0], this.store.authKey));
 
         const params = new URLSearchParams(window.location.search);
 
-        if (params.has('authKey')) {
-            this.store.authKey = params.get('authKey');
+        if (params.has('authToken')) {
+            this.store.authToken = params.get('authToken');
             this.ui.onPlay();
         }
+        this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0], this.store.authToken));
     }
 
 }
