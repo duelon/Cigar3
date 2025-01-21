@@ -48,16 +48,23 @@ export default class Network {
             height: 0
         }
     }
+    connect(addr) {
+        if (this.ws) this.reset();
 
-    connect(addr, authToken) {
-        if (this.ws) this.reset()
-        const protocols = ['authorization', authToken]
-        const ws = this.ws = new WebSocket(addr, protocols)
-        ws.binaryType = "arraybuffer"
-        ws.onopen = this.onOpen
-        ws.onmessage = this.onMessage
-        ws.onclose = this.onClose
-        ws.onerror = this.onError
+        const params = new URLSearchParams(window.location.search);
+
+        if (!params.has('authToken')) {
+            console.error('No authToken provided. Please add ?authToken=your_token to the URL.');
+            return;
+        }
+        const authToken = params.get('authToken');
+        const protocols = ['authorization', authToken];
+        const ws = (this.ws = new WebSocket(addr, protocols));
+        ws.binaryType = 'arraybuffer';
+        ws.onopen = this.onOpen;
+        ws.onmessage = this.onMessage;
+        ws.onclose = this.onClose;
+        ws.onerror = this.onError;
     }
 
     reset() {
