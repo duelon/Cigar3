@@ -1,109 +1,46 @@
-import ModalSystem from "./ModalSystem.js"
-import {getWsConnectString} from "./common.js";
-
 export default class UserInterface {
-
     constructor(core) {
         this.core = core
 
-        this.modalSystem = new ModalSystem()
 
         this.keysPressed = {};
         this.ejectInterval = null;
 
-        this.userInterface = document.getElementById("user-interface")
-        this.playButton = document.getElementById("play")
-        this.spectateButton = document.getElementById("spectate")
-        this.settingsButton = document.getElementById("settings")
-        this.skinButton = document.getElementById("skin")
-        this.nameInput = document.getElementById("name")
-        this.serversButton = document.getElementById("servers")
-        this.scoreElement = document.getElementById("score")
-        this.pingElement = document.getElementById("ping")
-        this.leaderboard = document.getElementById("leaderboard")
-        this.chatField = document.getElementById("chat-field")
-        this.chatContent = document.getElementById("chat-content")
-        this.minionControlled = document.getElementById("minion-controlled")
+        this.scoreElement = document.getElementById('score');
+        this.pingElement = document.getElementById('ping');
+        this.leaderboard = document.getElementById('leaderboard');
+        this.chatField = document.getElementById('chat-field');
+        this.chatContent = document.getElementById('chat-content');
+        this.minionControlled = document.getElementById('minion-controlled');
 
         setInterval(() => {
-            this.scoreElement.innerHTML = `Score: ${this.core.app.camera.score}`
-            this.pingElement.innerHTML = `Ping: ${this.core.net.ping}`
-            this.minionControlled.style.display = this.core.net.minionControlled ? "block" : "none"
-        }, 40)
+            this.scoreElement.innerHTML = `Score: ${this.core.app.camera.score}`;
+            this.minionControlled.style.display = this.core.net.minionControlled ? 'block' : 'none';
+            this.pingElement.innerHTML = `Ping: ${this.core.net.ping}`;
+        }, 40);
 
-        this.nameInput.value = this.core.store.name
-        this.skinButton.style.backgroundImage = `url("${this.core.store.skin}")`
-
-        this.addEvents()
+        this.addEvents();
     }
 
     addEvents() {
-        this.onPlay = this.onPlay.bind(this)
-        this.onSpectate = this.onSpectate.bind(this)
-        this.onSettings = this.onSettings.bind(this)
-        this.onSkin = this.onSkin.bind(this)
-        this.onKeyDown = this.onKeyDown.bind(this)
-        this.onNameChange = this.onNameChange.bind(this)
-        this.onResize = this.onResize.bind(this)
-        this.onScroll = this.onScroll.bind(this)
-        this.onServers = this.onServers.bind(this)
-        this.onKeyUp = this.onKeyUp.bind(this)
+        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onResize = this.onResize.bind(this);
+        this.onScroll = this.onScroll.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
 
-        this.playButton.addEventListener("click", this.onPlay)
-        this.spectateButton.addEventListener("click", this.onSpectate)
-        this.settingsButton.addEventListener("click", this.onSettings)
-        this.serversButton.addEventListener("click", this.onServers)
-        this.skinButton.addEventListener("click", this.onSkin)
-        addEventListener("keydown", this.onKeyDown);
-        addEventListener("keyup", this.onKeyUp);
-        this.nameInput.addEventListener("change", this.onNameChange)
-        addEventListener("resize", this.onResize)
-        addEventListener("beforeunload", (event) => {
-            this.core.store.settings = this.core.settings.rawSettings
-            event.cancelBubble = true
-            event.returnValue = 'You sure you want to leave?'
-            event.preventDefault()
-        })
+        addEventListener('keydown', this.onKeyDown);
+        addEventListener('keyup', this.onKeyUp);
+        addEventListener('resize', this.onResize);
+        addEventListener('beforeunload', (event) => {
+            this.core.store.settings = this.core.settings.rawSettings;
+            event.cancelBubble = true;
+            event.returnValue = 'You sure you want to leave?';
+            event.preventDefault();
+        });
 
         this.core.app.view.addEventListener('wheel', this.onScroll, {
-            passive: true
-        })
-    }
-
-    onPlay() {
-        this.core.net.spawn()
-        this.setPanelState(false)
-    }
-
-    onSpectate() {
-        this.setPanelState(false)
-        this.core.net.spectate()
-    }
-
-    onServers() {
-        let contentStr = `<div class="modal-servers-content">`
-        this.modalSystem.addModal(400, 500, "")
-    }
-
-    onSettings() {
-        let contentStr = `<div class="modal-settings-content">`
-        const settings = this.core.settings.rawSettings
-        for (const setting in settings) {
-            const inputValue = setting.replace(/[A-Z]/g, char => ' ' + char.toLowerCase())
-            contentStr += `
-            <div class="modal-settings-tile">
-            ${inputValue}<input type="checkbox" id="setting-${setting}" ${settings[setting] ? "checked" : ""}>
-            </div>
-            `
-        }
-        contentStr += `</div>`
-        this.modalSystem.addModal(200, null, contentStr)
-
-        for (const setting in settings) {
-            document.getElementById(`setting-${setting}`).addEventListener("click", () => {
-                this.core.settings[setting] = !this.core.settings[setting]
-            })
-        }
+            passive: true,
+        });
     }
 
     updateLeaderboard() {
@@ -130,62 +67,6 @@ export default class UserInterface {
         this.chatContent.insertAdjacentHTML('beforeend', contentStr)
     }
 
-    onServers() {
-        let contentStr = `<div class="modal-servers-content">`
-        for (const ip in this.core.app.servers) {
-            contentStr += `
-            <div class="modal-servers-tile">
-                <div class="round">${this.core.app.servers[ip].name} - ${ip}</div>
-                <div id="server-${ip}" class="button center">Connect</div>
-            </div>
-            `
-        }
-        contentStr += `</div>`
-        const modalID = this.modalSystem.addModal(300, null, contentStr)
-
-        for (const ip in this.core.app.servers) {
-            document.getElementById(`server-${ip}`).addEventListener("click", () => {
-                this.modalSystem.removeModal(modalID)
-                this.core.net.connect(getWsConnectString(ip))
-            })
-        }
-    }
-
-    onSkin() {
-        let contentStr = `<div class="modal-skins-content">`
-        const thirdSize = 500 / 3 - 30
-        contentStr += `
-        <div class="modal-skin-tile">
-            <div class="round" style="width:${thirdSize}px; height:${thirdSize}px; background-color: var(--less-dark)" ></div>
-            <div id="skin-remove" class="button center">Remove Skin</div>
-        </div>
-        `
-        for (const id in this.core.app.skins) {
-            contentStr += `
-            <div class="modal-skin-tile">
-                <div class="round" style="background-size: contain; background-repeat: no-repeat; background-color: var(--less-dark); width:${thirdSize}px; height:${thirdSize}px; background-image: url('${this.core.app.skins[id].src}')"></div>
-                <div id="skin-${id}" class="button center">Use</div>
-            </div>
-            `
-        }
-        contentStr += `</div>`
-        const modalId = this.modalSystem.addModal(500, 500, contentStr)
-
-        for (const id in this.core.app.skins) {
-            document.getElementById(`skin-${id}`).addEventListener("click", () => {
-                this.modalSystem.removeModal(modalId)
-                this.core.store.skin = this.core.app.skins[id].src
-                document.getElementById("skin").style.backgroundImage = `url('${this.core.app.skins[id].src}')`
-            })
-        }
-
-        document.getElementById("skin-remove").addEventListener("click", () => {
-            this.modalSystem.removeModal(modalId)
-            this.core.store.skin = ""
-            document.getElementById("skin").style.backgroundImage = ""
-        })
-    }
-
     onScroll({
         deltaY
     }) {
@@ -199,10 +80,7 @@ export default class UserInterface {
         this.keysPressed[code] = true;
 
         switch (code) {
-            case "Escape":
-                this.setPanelState(true);
-                break;
-            case "KeyW":
+            case 'KeyW':
                 if (!this.ejectInterval) {
                     this.core.net.sendEject();
                     this.ejectInterval = setInterval(() => {
@@ -259,7 +137,5 @@ export default class UserInterface {
         else this.userInterface.style.display = "none"
     }
 
-    onNameChange() {
-        this.core.store.name = this.nameInput.value
-    }
+
 }

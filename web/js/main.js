@@ -32,6 +32,7 @@ class Cigar3 {
         }
         this.store.authToken = params.get('authToken');
         this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0]), this.store.authToken);
+        this.net.spawn();
     }
 }
 
