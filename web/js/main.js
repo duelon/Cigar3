@@ -26,10 +26,11 @@ class Cigar3 {
 
         const params = new URLSearchParams(window.location.search);
 
-        if (params.has('authToken')) {
-            this.store.authToken = params.get('authToken');
-            this.ui.onPlay();
+        if (!params.has('authToken')) {
+            console.error('No authToken provided. Please add ?authToken=your_token to the URL.');
+            return;
         }
+        this.store.authToken = params.get('authToken');
         this.net.connect(getWsConnectString(Object.keys(this.app.servers)[0]), this.store.authToken);
     }
 }
