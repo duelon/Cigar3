@@ -10,7 +10,7 @@ fastify
   })
   .listen({
     port: 3000,
-    host: "::"
+    host: "0.0.0.0"
   }, err => {
     if (err) throw err
     else {
