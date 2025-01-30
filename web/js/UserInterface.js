@@ -132,10 +132,5 @@ export default class UserInterface {
     onResize() {
     }
 
-    setPanelState(show) {
-        if (show) this.userInterface.style.display = "flex"
-        else this.userInterface.style.display = "none"
-    }
-
 
 }

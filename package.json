@@ -7,10 +7,13 @@
     "fastify": "^3.27.2",
     "fastify-static": "^4.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
   "scripts": {
     "cigar3": "npm run add-game-version &&  node webServer.js",
-    "add-game-version": "node scripts/add-game-version.js"
+    "add-game-version": "node scripts/add-game-version.js",
+    "dev":"node scripts/add-game-version.js && nodemon webServer.js"
   },
   "repository": {
     "type": "git",

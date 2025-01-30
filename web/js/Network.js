@@ -97,6 +97,7 @@ export default class Network {
                 this.core.app.target_relative.y + this.core.app.camera.y
             );
         }, 40);
+        this.spawn();
     }
 
     onMessage({data}) {
